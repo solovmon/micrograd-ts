@@ -1,38 +1,44 @@
 import { Value } from "./micrograd/engine.ts"
+import { MLP } from "./micrograd/neuralNet.ts"
 
-function assertEqual(actual: number, expected: number, label: string): void {
-  if (actual !== expected) {
-    throw new Error(`${label}: expected ${expected}, got ${actual}`)
-  }
+function formatValues(values: Value[]): string {
+  return values.map((value, index) => `  [${index}] ${value.toString()}`).join("\n")
 }
 
-const numA = 2
-const a = new Value(numA)
-const numB = 4
-const b = new Value(numB)
-const numC = 10
-const c = new Value(numC)
-const numD = 2.5
-const d = new Value(numD)
+const model = new MLP(3, [4, 4, 1])
+const inputs = [new Value(2), new Value(3), new Value(-1)]
+const target = new Value(1)
 
-const e = a.add(b).add(3)
-const numE = numA + numB + 3
-const f = e.mul(c).add(6)
-const numF = numE * numC + 6
-const g = f.pow(d).mul(2)
-const numG = numF**numD * 2
-const h = g.pow(4)
-const numH = numG**4
+console.log("Model:")
+console.log(model)
+console.log("")
+console.log("Model internals:")
+console.log("")
 
-console.log("e: ", e)
-console.log("f: ", f)
-console.log("g: ", g)
-console.log("h: ", h)
+console.log("Inputs:")
+console.log(formatValues(inputs))
+console.log(`Target: ${target}`)
+console.log("")
 
+const prediction = model.call(inputs)
+if (Array.isArray(prediction)) {
+  throw new Error("Expected a single Value output from the final MLP layer")
+}
 
-assertEqual(e.data, numE, "e")
-assertEqual(f.data, numF, "f")
-assertEqual(g.data, numG, "g")
-assertEqual(h.data, numH, "h")
+const loss = prediction.sub(target).pow(2)
 
-console.log(h.topo())
+console.log("Forward pass:")
+console.log(`Prediction: ${prediction}`)
+console.log(`Loss: ${loss}`)
+console.log("")
+
+model.zeroGrad()
+loss.backward()
+
+console.log("After backward:")
+console.log(`Prediction: ${prediction}`)
+console.log(`Loss: ${loss}`)
+console.log("")
+
+console.log("Parameters:")
+console.log(formatValues(model.parameters()))
