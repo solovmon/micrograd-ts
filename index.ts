@@ -1,19 +1,38 @@
 import { Value } from "./micrograd/engine.ts"
 
-const a = new Value(2)
-const b = new Value(3)
-const c = a.add(b)
-const d = c.add(4)
-
-console.log("a:", a.data)
-console.log("b:", b.data)
-console.log("c = a + b:", c.data)
-console.log("d = c + 4:", d.data)
-
-if (c.data !== 5) {
-  throw new Error(`Expected c.data to be 5, got ${c.data}`)
+function assertEqual(actual: number, expected: number, label: string): void {
+  if (actual !== expected) {
+    throw new Error(`${label}: expected ${expected}, got ${actual}`)
+  }
 }
 
-if (d.data !== 9) {
-  throw new Error(`Expected d.data to be 9, got ${d.data}`)
-}
+const numA = 2
+const a = new Value(numA)
+const numB = 4
+const b = new Value(numB)
+const numC = 10
+const c = new Value(numC)
+const numD = 2.5
+const d = new Value(numD)
+
+const e = a.add(b).add(3)
+const numE = numA + numB + 3
+const f = e.mul(c).add(6)
+const numF = numE * numC + 6
+const g = f.pow(d).mul(2)
+const numG = numF**numD * 2
+const h = g.pow(4)
+const numH = numG**4
+
+console.log("e: ", e)
+console.log("f: ", f)
+console.log("g: ", g)
+console.log("h: ", h)
+
+
+assertEqual(e.data, numE, "e")
+assertEqual(f.data, numF, "f")
+assertEqual(g.data, numG, "g")
+assertEqual(h.data, numH, "h")
+
+console.log(h.topo())
