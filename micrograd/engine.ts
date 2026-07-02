@@ -17,6 +17,14 @@ export class Value {
     this.previous  = new Set(children)
     this.operation = operation
   }
+  
+  get children(): readonly Value[] {
+    return [...this.previous]
+  }
+
+  get op(): string {
+    return this.operation
+  }
 
   toString(): string {
     return `Value: { data=${this.data}, grad=${this.grad} }`

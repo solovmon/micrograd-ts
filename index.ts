@@ -42,3 +42,5 @@ console.log("")
 
 console.log("Parameters:")
 console.log(formatValues(model.parameters()))
+console.log("")
+
